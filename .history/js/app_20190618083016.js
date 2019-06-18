@@ -5,7 +5,7 @@ console.log("Here we are, Cat Clicker Premium!!");
 
     let model = {
         /**
-         * Marca como seleccionado un gato en particular y lo devuelve
+         * 
          * @param {string} catName - Nombre de un gato
          * @return {Object} The selected cat object
          */

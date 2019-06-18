@@ -5,9 +5,8 @@ console.log("Here we are, Cat Clicker Premium!!");
 
     let model = {
         /**
-         * Marca como seleccionado un gato en particular y lo devuelve
+         * 
          * @param {string} catName - Nombre de un gato
-         * @return {Object} The selected cat object
          */
         selectCat: function(catName) {
             for(const cat of this.data.cats) { // Se utiliza el bucle "for of" porque se necesita poder romper el loop (y forEach no lo permite)
@@ -16,8 +15,6 @@ console.log("Here we are, Cat Clicker Premium!!");
                     break;
                 }
             }
-
-            return this.data.cats.filter(cat => cat.name === catName)
         },
         /**
          * Añade un click a un gato
