@@ -78,6 +78,7 @@ console.log("Here we are, Cat Clicker Premium!!");
         init: function () {
             // Cacheos del DOM
             this.root = $("#wrapper");
+            this.catTemplate = $('script[data-template="cat"]').html();
 
             // Creación de escuchadores
             this.root.on("click", "li", octopus.hitCat); // Escuchador delegado
@@ -85,13 +86,17 @@ console.log("Here we are, Cat Clicker Premium!!");
             this.render();
         },
         render: function () {
+            // Copias locales de propiedades del objeto
+            var catTemplate = this.catTemplate;
+            var root = this.root;
+
             var htmlStr = "<ul>";
             octopus.getCats().forEach(function (cat) {
-                htmlStr += "<li><img height='45px' width='45px' src='./img/" + cat.name + ".jpg' title='" + cat.name + "'> (" + cat.hits + ") </img></li>";
+                htmlStr += catTemplate.replace(/{{name}}/g, cat.name).replace(/{{hits}}/g, cat.hits);
             });
 
             htmlStr += "</ul>";
-            this.root.html(htmlStr);
+            root.html(htmlStr);
         }
     }
 

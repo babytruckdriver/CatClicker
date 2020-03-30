@@ -16,9 +16,15 @@
 <body>
     <h2>CatClicker</h2>
     <div id="wrapper">
-
-
+        <!-- Here the App content -->
     </div>
+
+    <!-- JS Scripts and Templates -->
+    <script type="text/template" data-template="cat">
+        <li>
+            <img height='45px' width='45px' src='./img/{{name}}.jpg' title='{{name}}'> {{name}}  ({{hits}}) </img>
+        </li>
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
