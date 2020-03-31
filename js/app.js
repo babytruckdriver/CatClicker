@@ -20,6 +20,9 @@ console.log("Here we are, Cat Clicker Premium!!");
 
             return this.data.cats.filter(cat => cat.name === catName)
         },
+        getSelectedCat: function () {
+            return this.selectCat(this.data.selectedCat);
+        },
         /**
          * Añade un click a un gato
          * @param {string} catName - Nombre de un gato
@@ -64,8 +67,20 @@ console.log("Here we are, Cat Clicker Premium!!");
             view.init();
         },
         // Métodos utilizado desde la vista: view
-        getCats: function () {
-            return model.getCats();
+        getCats: function (catName) {
+            if (catName) {
+                return model.selectCat(catName);
+            } else {
+                return model.getCats();
+            }
+        },
+        selectCat: function (evt) {
+            let catName = $(evt.target).text();
+            model.selectCat(catName);
+            view.render();
+        },
+        getSelectedCat: function () {
+            return model.getSelectedCat();
         },
         hitCat: function (evt) {
             let catName = $(evt.target).attr("title");
@@ -78,25 +93,41 @@ console.log("Here we are, Cat Clicker Premium!!");
         init: function () {
             // Cacheos del DOM
             this.root = $("#wrapper");
-            this.catTemplate = $('script[data-template="cat"]').html();
+            this.catList = $("#catList");
+            this.catFrame = $("#catFrame");
+            this.catInfo = this.catFrame.find(".cat-info");
+
+            // this.catTemplate = $('script[data-template="cat"]').html();
 
             // Creación de escuchadores
-            this.root.on("click", "li", octopus.hitCat); // Escuchador delegado
+            this.catList.on("click", "li", octopus.selectCat); // Escuchador delegado
+            this.catFrame.on("click", "img", octopus.hitCat)
 
             this.render();
         },
         render: function () {
             // Copias locales de propiedades del objeto
-            var catTemplate = this.catTemplate;
-            var root = this.root;
+            //var catTemplate = this.catTemplate;
+            var catList = this.catList;
+            var catFrame = this.catFrame;
+            var catInfo = this.catInfo;
 
-            var htmlStr = "<ul>";
-            octopus.getCats().forEach(function (cat) {
-                htmlStr += catTemplate.replace(/{{name}}/g, cat.name).replace(/{{hits}}/g, cat.hits);
-            });
+            // Creación de la lista si aún no existe
+            if (catList.find("li").length === 0) {
+                var htmlStr = "";
+                octopus.getCats().forEach(function (cat) {
+                    htmlStr += "<li>" + cat.name + "</li>"; //catTemplate.replace(/{{name}}/g, cat.name).replace(/{{hits}}/g, cat.hits);
+                });
 
-            htmlStr += "</ul>";
-            root.html(htmlStr);
+                catList.html(htmlStr);
+            }
+
+            // Actualización del marco del gato si hay alguno seleccionado
+            let selectedCat = octopus.getSelectedCat();
+            if (selectedCat[0]) {
+                catFrame.find("img").attr("title", selectedCat[0].name).attr("src", "./img/" + selectedCat[0].name + ".jpg");
+                catInfo.text("Cat: " + selectedCat[0].name + ". Hits: " + selectedCat[0].hits);
+            }
         }
     }
 
