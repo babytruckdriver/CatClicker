@@ -40,6 +40,21 @@ console.log("Here we are, Cat Clicker Premium!!");
         getCats: function () {
             return this.data.cats;
         },
+        setAdminMode: function (mode) {
+            this.data.adminMode = mode;
+        },
+        getAdminMode: function () {
+            return this.data.adminMode;
+        },
+        saveCat: function (updatedCat) {
+            var catName = this.getSelectedCat()[0].name;
+            this.data.cats.forEach(function (cat) {
+                if (cat.name === catName) {
+                    cat.hits = updatedCat.hits;
+                    cat.name = updatedCat.name;
+                }
+            })
+        },
         /**
          * Definición e inicialización de la estructura de datos de la aplicación
          */
@@ -47,6 +62,7 @@ console.log("Here we are, Cat Clicker Premium!!");
             // Definición de la estructura de datos de la aplicación
             this.data = {
                 selectedCat: "",
+                adminMode: false,
                 cats: []
             }
 
@@ -69,6 +85,7 @@ console.log("Here we are, Cat Clicker Premium!!");
         init: function () {
             model.init();
             catFrameView.init();
+            catAdminView.init();
             view.init();
         },
         // Métodos utilizado desde la vista: view
@@ -82,7 +99,8 @@ console.log("Here we are, Cat Clicker Premium!!");
         selectCat: function (evt) {
             let catName = $(evt.target).text();
             model.selectCat(catName);
-            view.render();
+            catFrameView.render();
+            catAdminView.render();
         },
         getSelectedCat: function () {
             return model.getSelectedCat();
@@ -90,7 +108,21 @@ console.log("Here we are, Cat Clicker Premium!!");
         hitCat: function (evt) {
             let catName = $(evt.target).attr("title");
             model.hitCat(catName);
-            view.render();
+            catFrameView.render();
+            catAdminView.render();
+        },
+        setAdminMode: function (mode) {
+            model.setAdminMode(mode);
+            catAdminView.render();
+        },
+        getAdminMode: function () {
+            return model.getAdminMode();
+        },
+        saveCat: function (cat) {
+            model.setAdminMode(false);
+            model.saveCat(cat);
+            catFrameView.render();
+            catAdminView.render();
         }
     };
 
@@ -99,38 +131,9 @@ console.log("Here we are, Cat Clicker Premium!!");
     let view = {
         init: function () {
             // Cacheos del DOM
-            this.root = $("#wrapper");
-            this.catFrame = $("#catFrame");
-            this.catInfo = this.catFrame.find(".cat-info");
-
-            // this.catTemplate = $('script[data-template="cat"]').html();
-
-            // Creación de escuchadores
-            this.catFrame.on("click", "img", octopus.hitCat)
-
-            this.render();
-        },
-        render: function () {
-            // Copias locales de propiedades del objeto
-            //var catTemplate = this.catTemplate;
-            var catFrame = this.catFrame;
-            var catInfo = this.catInfo;
-
-
-            // Actualización del marco del gato si hay alguno seleccionado
-            let selectedCat = octopus.getSelectedCat();
-            if (selectedCat[0]) {
-                catFrame.find("img").attr("title", selectedCat[0].name).attr("src", "./img/" + selectedCat[0].name + ".jpg");
-                catInfo.text("Cat: " + selectedCat[0].name + ". Hits: " + selectedCat[0].hits);
-            }
-        }
-    }
-
-    let catFrameView = {
-        init: function () {
-            // Cacheos del DOM
             this.catList = $("#catList");
 
+            // this.catTemplate = $('script[data-template="cat"]').html();
             // Creación de escuchadores
             this.catList.on("click", "li", octopus.selectCat); // Escuchador delegado
 
@@ -146,6 +149,78 @@ console.log("Here we are, Cat Clicker Premium!!");
             });
 
             catList.html(htmlStr);
+        }
+    }
+
+    let catFrameView = {
+        init: function () {
+            // Cacheos del DOM
+            this.root = $("#wrapper");
+            this.catFrame = $("#catFrame");
+            this.catInfo = this.catFrame.find(".cat-info");
+
+            // Creación de escuchadores
+            this.catFrame.on("click", "img", octopus.hitCat)
+
+            this.render();
+        },
+        render: function () {
+            var catInfo = this.catInfo;
+            var catFrame = this.catFrame;
+
+
+            // Actualización del marco del gato si hay alguno seleccionado
+            let selectedCat = octopus.getSelectedCat();
+            if (selectedCat[0]) {
+                catFrame.find("img").attr("title", selectedCat[0].name).attr("src", "./img/" + selectedCat[0].name + ".jpg");
+                catInfo.text("Cat: " + selectedCat[0].name + ". Hits: " + selectedCat[0].hits);
+            }
+        }
+    }
+
+    let catAdminView = {
+        init: function () {
+            // Cacheos del DOM
+            this.btoAdmin = $("#btoAdmin");
+
+            this.formCatAdmin = $("#formCatAdmin");
+            this.inputCatName = this.formCatAdmin.find("#inputCatName");
+            this.inputCatHits = this.formCatAdmin.find("#inputCatHits");
+            this.btoCancel = this.formCatAdmin.find("#btoCancel");
+            this.btoSave = this.formCatAdmin.find("#btoSave");
+
+            // Creación de escuchadores
+            this.btoAdmin.on("click", function () {
+                octopus.setAdminMode(true);
+            });
+
+            this.btoCancel.on("click", function () {
+                octopus.setAdminMode(false);
+            });
+
+            this.btoSave.on("click", function () {
+                var cat = {};
+                cat.name = this.inputCatName.val();
+                cat.hits = this.inputCatHits.val();
+                octopus.saveCat(cat);
+            }.bind(this));
+        },
+        render: function () {
+            var inputCatName = this.inputCatName;
+            var inputCatHits = this.inputCatHits;
+            var formCatAdmin = this.formCatAdmin;
+
+            var selectedCat = octopus.getSelectedCat();
+            if (selectedCat[0]) {
+                inputCatName.val(selectedCat[0].name);
+                inputCatHits.val(selectedCat[0].hits)
+            }
+
+            if (octopus.getAdminMode()) {
+                formCatAdmin.removeClass("d-none");
+            } else {
+                formCatAdmin.addClass("d-none");
+            }
         }
     }
 

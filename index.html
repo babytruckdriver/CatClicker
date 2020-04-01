@@ -14,8 +14,8 @@
 
 </head>
 
-<body>
-    <h2>CatClicker</h2>
+<body class="m-2">
+    <h2>Cat Clicker</h2>
     <div id="wrapper">
         <!-- Here the App content -->
         <div class="row">
@@ -26,6 +26,26 @@
             <div id="catFrame" class="col">
                 <img src='' title='' width="400px"></img>
                 <div class="cat-info"></div>
+            </div>
+        </div>
+
+        <div class="row m-2">
+            <div class="col-1 p-2">
+                <button id="btoAdmin" class="btn btn-primary" type="button">Admin</button>
+            </div>
+            <div class="col-2">
+                <form id="formCatAdmin" class="d-none p-2" style="background: #f7e2e2;">
+                    <div class="form-group">
+                        <label for="inputCatName">Name</label>
+                        <input type="text" class="form-control" id="inputCatName" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputCatHits">Hits</label>
+                        <input type="number" class="form-control" id="inputCatHits">
+                    </div>
+                    <button id="btoCancel" class="btn btn-secondary" type="button">Cancel</button>
+                    <button id="btoSave" class="btn btn-secondary" type="button">Save</button>
+                </form>
             </div>
         </div>
     </div>
